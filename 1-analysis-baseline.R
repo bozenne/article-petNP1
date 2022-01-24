@@ -1,8 +1,8 @@
 ## * Packages
 library(lava)
-library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "58bf35a9112795b930a8e3a294116e7d6f1d10ee")
+library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "9e7fa13ed7522b45871f5bfdea02ffeddaee1b90")
 library(butils) ## installation: devtools::install_github("bozenne/butils")
-library(LMMstar)
+library(LMMstar)  ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "19bf4587e55a4821d369d937e8480b82b26cdc60")
 
 library(multcomp)
 library(qqtest)
