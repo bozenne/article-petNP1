@@ -1,7 +1,7 @@
 ## * Packages
 library(lava)
 library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "58bf35a9112795b930a8e3a294116e7d6f1d10ee")
-library(LMMstar) ## installation: devtools::install_github("bozenne/LMMstar", ref = "master")
+library(LMMstar) ## installation: devtools::install_github("bozenne/LMMstar", ref = "19bf4587e55a4821d369d937e8480b82b26cdc60")
 library(butils) ## installation: devtools::install_github("bozenne/butils")
 
 library(multcomp)
@@ -11,12 +11,12 @@ library(nlme)
 ## * Set working directory and path to dataset
 if(Sys.info()["login"] == "hpl802"){
     path <- "c:/Users/hpl802/Documents/Consult/Consult-NRU/C45-WP1-Kristin/"
-}else if(Sys.info()["nodename"] == "brice-Latitude-E5540"){
-    path <- "~/Dropbox/C45-WP1-Kristin/"    
+}else if(Sys.info()["login"] == "bozenne"){
+    path <- "~/Documents/GitHub/article-petNP1/"    
 }else{
     path <- "C:/Users/localadmin/Dropbox/C45 - WP1 - Kristin"
 }
-path.code <- file.path(path,"code")
+path.code <- file.path(path,"")
 path.data <- file.path(path,"source")
 
 
@@ -732,20 +732,20 @@ NROW(df.longiHCENRER)
 ## ** fit MLM
 df.longiHCENRER$response.w4 <- relevel(df.longiHCENRER$response.w4,"HC")
 gls.W4.longi <- list(neocortex_w4 = lmm(neocortex.log ~ response.w4 + age + sex + sert + sb.per.kg,
-                                        method = "ML", weight = varIdent(form =~1|group), data = df.longiHCENRER),
-                     limbic_w4 = gls(limbic.log ~ response.w4 + age + sex + sert + sb.per.kg,
-                                     method = "ML", weight = varIdent(form =~1|group), data = df.longiHCENRER),
-                     neostriatum_w4 = gls(neostriatum.log ~ response.w4 + age + sex + sert + sb.per.kg,
-                                          method = "ML", weight = varIdent(form =~1|group), data = df.longiHCENRER))
+                                        repetition = ~group|id, data = df.longiHCENRER),
+                     limbic_w4 = lmm(limbic.log ~ response.w4 + age + sex + sert + sb.per.kg,
+                                     repetition = ~group|id, data = df.longiHCENRER),
+                     neostriatum_w4 = lmm(neostriatum.log ~ response.w4 + age + sex + sert + sb.per.kg,
+                                          repetition = ~group|id, data = df.longiHCENRER))
 class(gls.W4.longi) <- "mmm"
 
 df.longiHCNRRE$group4 <- relevel(df.longiHCNRRE$group4,"HC")
-gls.W8.longi <- list(neocortex_w8 = gls(neocortex.log ~ group4 + age + sex + sert + sb.per.kg,
-                                        method = "ML", weight = varIdent(form =~1|group), data = df.longiHCNRRE),
-                     limbic_w8 = gls(limbic.log ~ group4 + age + sex + sert + sb.per.kg,
-                                     method = "ML", weight = varIdent(form =~1|group), data = df.longiHCNRRE),
-                     neostriatum_w8 = gls(neostriatum.log ~ group4 + age + sex + sert + sb.per.kg,
-                                       method = "ML", weight = varIdent(form =~1|group), data = df.longiHCNRRE))
+gls.W8.longi <- list(neocortex_w8 = lmm(neocortex.log ~ group4 + age + sex + sert + sb.per.kg,
+                                        repetition = ~group|id, data = df.longiHCNRRE),
+                     limbic_w8 = lmm(limbic.log ~ group4 + age + sex + sert + sb.per.kg,
+                                     repetition = ~group|id, data = df.longiHCNRRE),
+                     neostriatum_w8 = lmm(neostriatum.log ~ group4 + age + sex + sert + sb.per.kg,
+                                          repetition = ~group|id, data = df.longiHCNRRE))
 class(gls.W8.longi) <- "mmm"
 
 lapply(gls.W4.longi, logLik)
@@ -768,31 +768,21 @@ lapply(gls.W8.longi, logLik)
 ## $limbic_w8
 ## 'log Lik.' 80.91462 (df=9)
 
-gls.W4.longi <- sCorrect(gls.W4.longi)
-gls.W8.longi <- sCorrect(gls.W8.longi)
-
 ## ** diagnostics
 ## general diagnostic
-## plot(gls.W4.longi$neocortex_w4) 
-## plot(gls.W4.longi$limbic_w4)  
-## plot(gls.W4.longi$neostriatum_w4)
-
-## plot(gls.W8.longi$neocortex_w8)
-## plot(gls.W8.longi$limbic_w8)  
-## plot(gls.W8.longi$neostriatum_w8)
 
 ## influencial observations
-## hist(iid2(gls.W4.longi$neocortex_w4)[,"response.w4ER"], main = paste0("coef=",coef(gls.W4.longi$neocortex_w4)["response.w4ER"]))
-## hist(iid2(gls.W4.longi$neostriatum_w4)[,"response.w4ER"], main = paste0("coef=",coef(gls.W4.longi$neostriatum_w4)["response.w4ER"]))
-## hist(iid2(gls.W4.longi$limbic_w4)[,"response.w4ER"], main = paste0("coef=",coef(gls.W4.longi$limbic_w4)["response.w4ER"]))
+## hist(iid(gls.W4.longi$neocortex_w4)[,"response.w4ER"], main = paste0("coef=",coef(gls.W4.longi$neocortex_w4)["response.w4ER"]))
+## hist(iid(gls.W4.longi$neostriatum_w4)[,"response.w4ER"], main = paste0("coef=",coef(gls.W4.longi$neostriatum_w4)["response.w4ER"]))
+## hist(iid(gls.W4.longi$limbic_w4)[,"response.w4ER"], main = paste0("coef=",coef(gls.W4.longi$limbic_w4)["response.w4ER"]))
 
-## hist(iid2(gls.W8.longi$neocortex_w4)[,"response.w4ENR"], main = paste0("coef=",coef(gls.W8.longi$neocortex_w4)["response.w4ENR"]))
-## hist(iid2(gls.W8.longi$neostriatum_w4)[,"response.w4ENR"], main = paste0("coef=",coef(gls.W8.longi$neostriatum_w4)["response.w4ENR"]))
-## hist(iid2(gls.W8.longi$limbic_w4)[,"response.w4ENR"], main = paste0("coef=",coef(gls.W8.longi$limbic_w4)["response.w4ENR"]))
+## hist(iid(gls.W8.longi$neocortex_w4)[,"response.w4ENR"], main = paste0("coef=",coef(gls.W8.longi$neocortex_w4)["response.w4ENR"]))
+## hist(iid(gls.W8.longi$neostriatum_w4)[,"response.w4ENR"], main = paste0("coef=",coef(gls.W8.longi$neostriatum_w4)["response.w4ENR"]))
+## hist(iid(gls.W8.longi$limbic_w4)[,"response.w4ENR"], main = paste0("coef=",coef(gls.W8.longi$limbic_w4)["response.w4ENR"]))
 
-## hist(iid2(gls.W4.longi$neocortex_w8)[,"group4RE"], main = paste0("coef=",coef(gls.W4.longi$neocortex_w8)["group4RE"]))
-## hist(iid2(gls.W4.longi$neostriatum_w8)[,"group4RE"], main = paste0("coef=",coef(gls.W4.longi$neostriatum_w8)["group4RE"]))
-## hist(iid2(gls.W4.longi$limbic_w8)[,"group4RE"], main = paste0("coef=",coef(gls.W4.longi$limbic_w8)["group4RE"]))
+## hist(iid(gls.W4.longi$neocortex_w8)[,"group4RE"], main = paste0("coef=",coef(gls.W4.longi$neocortex_w8)["group4RE"]))
+## hist(iid(gls.W4.longi$neostriatum_w8)[,"group4RE"], main = paste0("coef=",coef(gls.W4.longi$neostriatum_w8)["group4RE"]))
+## hist(iid(gls.W4.longi$limbic_w8)[,"group4RE"], main = paste0("coef=",coef(gls.W4.longi$limbic_w8)["group4RE"]))
 
 ## hist(iid2(gls.W8.longi$neocortex_w8)[,"group4NR"], main = paste0("coef=",coef(gls.W8.longi$neocortex_w8)["group4NR"]))
 ## hist(iid2(gls.W8.longi$neostriatum_w8)[,"group4NR"], main = paste0("coef=",coef(gls.W8.longi$neostriatum_w8)["group4NR"]))
@@ -810,36 +800,30 @@ gls.W8.longi <- sCorrect(gls.W8.longi)
 
 ## ** inference
 ## *** correction per group and time (i.e. over regions)
-gls.regionEffect.longi <- list("W4: ER vs. HC" = glht2(gls.W4.longi,
-                                                       linfct = c("neocortex: ER vs. HC" = "neocortex_w4: response.w4ER = 0",
-                                                                  "limbic: ER vs. HC" = "limbic_w4: response.w4ER = 0",
-                                                                  "neostriatum: ER vs. HC" = "neostriatum_w4: response.w4ER = 0"),
-                                                       robust = FALSE),
-                               "W4: ENR vs. HC" = glht2(gls.W4.longi,
-                                                        linfct = c("neocortex: ENR vs. HC" = "neocortex_w4: response.w4ENR = 0",
-                                                                   "limbic: ENR vs. HC" = "limbic_w4: response.w4ENR = 0",
-                                                                   "neostriatum: ENR vs. HC" = "neostriatum_w4: response.w4ENR = 0"),
-                                                        robust = FALSE),
-                               "W4: ER vs. ENR" = glht2(gls.W4.longi,
-                                                        linfct = c("neocortex: ER vs. ENR" = "neocortex_w4: response.w4ER - neocortex_w4: response.w4ENR = 0",
-                                                                   "limbic: ER vs. ENR" = "limbic_w4: response.w4ER - limbic_w4: response.w4ENR = 0",
-                                                                   "neostriatum: ER vs. ENR" = "neostriatum_w4: response.w4ER - neostriatum_w4: response.w4ENR = 0"),
-                                                        robust = FALSE),
-                               "W8: RE vs. HC" = glht2(gls.W8.longi,
-                                                       linfct = c("neocortex: RE vs. HC" = "neocortex_w8: group4RE = 0",
-                                                                  "limbic: RE vs. HC" = "limbic_w8: group4RE = 0",
-                                                                  "neostriatum: RE vs. HC" = "neostriatum_w8: group4RE = 0"),
-                                                       robust = FALSE),
-                               "W8: NR vs. HC" = glht2(gls.W8.longi,
-                                                        linfct = c("neocortex: NR vs. HC" = "neocortex_w8: group4NR = 0",
-                                                                   "limbic: NR vs. HC" = "limbic_w8: group4NR = 0",
-                                                                   "neostriatum: NR vs. HC" = "neostriatum_w8: group4NR = 0"),
-                                                        robust = FALSE),
-                               "W8: RE vs. NR" = glht2(gls.W8.longi,
-                                                        linfct = c("neocortex: RE vs. NR" = "neocortex_w8: group4RE - neocortex_w8: group4NR = 0",
-                                                                   "limbic: RE vs. NR" = "limbic_w8: group4RE - limbic_w8: group4NR = 0",
-                                                                   "neostriatum: RE vs. NR" = "neostriatum_w8: group4RE - neostriatum_w8: group4NR = 0"),
-                                                        robust = FALSE)
+gls.regionEffect.longi <- list("W4: ER vs. HC" = rbind(anova(gls.W4.longi$neocortex, "response.w4ER = 0", ci = TRUE),
+                                                       anova(gls.W4.longi$limbic, "response.w4ER = 0", ci = TRUE),
+                                                       anova(gls.W4.longi$neostriatum, "response.w4ER = 0", ci = TRUE)
+                                                       ),
+                               "W4: ENR vs. HC" = rbind(anova(gls.W4.longi$neocortex, "response.w4ENR = 0", ci = TRUE),
+                                                        anova(gls.W4.longi$limbic, "response.w4ENR = 0", ci = TRUE),
+                                                        anova(gls.W4.longi$neostriatum, "response.w4ENR = 0", ci = TRUE)
+                                                        ),
+                               "W4: ER vs. ENR" = rbind(anova(gls.W4.longi$neocortex, "response.w4ER - response.w4ENR = 0", ci = TRUE),
+                                                        anova(gls.W4.longi$limbic, "response.w4ER - response.w4ENR = 0", ci = TRUE),
+                                                        anova(gls.W4.longi$neostriatum, "response.w4ER - response.w4ENR = 0", ci = TRUE)
+                                                        ),
+                               "W8: RE vs. HC" = rbind(anova(gls.W8.longi$neocortex, "group4RE = 0", ci = TRUE),
+                                                       anova(gls.W8.longi$limbic, "group4RE = 0", ci = TRUE),
+                                                       anova(gls.W8.longi$neostriatum, "group4RE = 0", ci = TRUE)
+                                                       ),
+                               "W8: NR vs. HC" = rbind(anova(gls.W8.longi$neocortex, "group4NR = 0", ci = TRUE),
+                                                       anova(gls.W8.longi$limbic, "group4NR = 0", ci = TRUE),
+                                                       anova(gls.W8.longi$neostriatum, "group4NR = 0", ci = TRUE)
+                                                       ),
+                               "W8: RE vs. NR" = rbind(anova(gls.W8.longi$neocortex, "group4RE - group4NR = 0", ci = TRUE),
+                                                       anova(gls.W8.longi$limbic, "group4RE - group4NR = 0", ci = TRUE),
+                                                       anova(gls.W8.longi$neostriatum, "group4RE - group4NR = 0", ci = TRUE)
+                                                       )
                                )
 
 
@@ -973,24 +957,19 @@ lmCor.longi <- list(W2.neocortex = lm(neocortex.log ~ change.hamd6.w2 + age + se
                     W12.neostriatum = lm(neostriatum.log ~ change.hamd6.w12 + age + sex+ sert + sb.per.kg,
                                       data = df.longiCase))
 class(lmCor.longi) <- "mmm"
-lmCor.longi <- sCorrect(lmCor.longi, ssc = "residuals", df = "Satterthwaite")
 
 ## ** diagnostics                    
-dt.residuals <- do.call(rbind,lapply(names(lmCor.longi), function(iM){ ## iM <- names(lmCor.longi[12])
-    iMF <- model.frame(lmCor.longi[[iM]])
-    iDT <- data.table(model = iM,
-                      outcome = iMF[,grep("\\.log",names(iMF))],
-                      change.hamd6 = iMF[,grep("change\\.hamd6",names(iMF))],
-                      residuals = as.numeric(NA))
-    iRes <- residuals(lmCor.longi[[iM]])
-    iDT[as.numeric(names(iRes)),"residuals"] <- as.double(iRes)
-    return(iDT)
+dt.residuals <- do.call(rbind,lapply(lmCor.longi, function(iX){ ## iX <- lmCor.longi[[1]]
+    iOut <- data.frame(change.hamd6 = df.longiCase[[names(coef(iX)[2])]],
+                       region = all.vars(formula(iX))[1],
+                       time = gsub("change.hamd6.","",names(coef(iX)[2]), fixed = TRUE),
+                       residuals = NA)
+    
+    iOut$residuals[setdiff(1:NROW(iOut),iX$na.action)] <- residuals(iX)
+    return(iOut)
 }))
+rownames(dt.residuals)  <- NULL
 
-dt.residuals[, time := sapply(strsplit(model,"\\."),"[",1)]
-dt.residuals[, time := factor(time, levels = paste0("W",c(2,4,8,12)))]
-dt.residuals[, region := sapply(strsplit(model,"\\."),"[",2)]
-dt.residuals[, region := factor(region, levels = c("neocortex","limbic","neostriatum"))]
 gg.resCor <- ggplot(dt.residuals, aes(x = change.hamd6, y = residuals))
 gg.resCor <- gg.resCor + geom_point() + stat_smooth()
 gg.resCor <- gg.resCor + facet_grid(time~region, scale = "free")
@@ -1086,8 +1065,8 @@ lapply(lmCor.partial.longi, summary)
   ## 91   44   34 
 
 ## ** visualisation
-df.tempo <- melt(df.longi, id.vars = c("id","response50.w8"),
-                 measure.vars = c("neocortex.log","hippocampus.log","neostriatum.log"))
+df.tempo <- reshape2::melt(df.longi, id.vars = c("id","response50.w8"),
+                           measure.vars = c("neocortex.log","hippocampus.log","neostriatum.log"))
 gg50 <- ggplot(df.tempo, aes(x = response50.w8, y = value))
 gg50 <- gg50 + geom_boxplot() + geom_jitter(width = 0.1, height = 0)
 gg50 <- gg50 + facet_wrap(~variable)
@@ -1109,13 +1088,13 @@ lvmfitW8.longi50 <- estimate(lvmW8.longi50, data = df.longi,
 ## gof(lvmfitW8.longi50)
 
 ## ** inference
-lvmfitW8.longi50 <- sCorrect(lvmfitW8.longi50, df = NA, ssc = NA)
+lvmfitW8.longi50C <- estimate2(lvmfitW8.longi50, df = NA, ssc = NA)
 ## coef(lvmfitW8.longi50)
 
 ## global effect
-lvmW8.etaEffect.longi50 <- glht2(lvmfitW8.longi50, linfct = c("50- vs. HC" = "eta~response50.w850m=0",
-                                                              "50=+ vs. HC" = "eta~response50.w850pe=0",
-                                                              "50=+ vs. 50-" = "eta~response50.w850pe-eta~response50.w850m=0"))
+lvmW8.etaEffect.longi50 <- glht2(lvmfitW8.longi50C, linfct = c("50- vs. HC" = "eta~response50.w850m=0",
+                                                               "50=+ vs. HC" = "eta~response50.w850pe=0",
+                                                               "50=+ vs. 50-" = "eta~response50.w850pe-eta~response50.w850m=0"))
 lvmW8.etaEffect.longi50 <- summary(lvmW8.etaEffect.longi50, test = adjusted("none"))
 lvmW8.etaEffect.longi50
 ## Linear Hypotheses:
@@ -1128,19 +1107,19 @@ lvmW8.etaEffect.longi50
 ## (Adjusted p values reported -- none method) 
 
 ## region specific effect
-lvmW8.regionEffect.longi50 <- list("50- vs. HC" = effects2(lvmfitW8.longi50,
-                                                           link = c("neocortex: 50- vs. HC" = "neocortex.log~response50.w850m",
-                                                                    "hippocampus: 50- vs. HC" = "hippocampus.log~response50.w850m",
-                                                                    "neostriatum: 50- vs. HC" = "neostriatum.log~response50.w850m")),
-                                   "50=+ vs HC" =  effects2(lvmfitW8.longi50,
-                                                            link = c("neocortex: 50+ vs. HC" = "neocortex.log~response50.w850pe",
-                                                                     "hippocampus: 50+ vs. HC" = "hippocampus.log~response50.w850pe",
-                                                                     "neostriatum: 50+ vs. HC" = "neostriatum.log~response50.w850pe")),
-                                   "50=+ vs 50-" =  effects2(lvmfitW8.longi50,
-                                                             link = c("neocortex: 50+ vs. 50-" = "neocortex.log~response50.w850pe-neocortex.log~response50.w850m",
-                                                                      "hippocampus: 50+ vs. 50-" = "hippocampus.log~response50.w850pe-hippocampus.log~response50.w850m",
-                                                                      "neostriatum: 50+ vs. 50-" = "neostriatum.log~response50.w850pe-neostriatum.log~response50.w850m"
-                                                                      )))
+lvmW8.regionEffect.longi50 <- list("50- vs. HC" = effects2(lvmfitW8.longi50C,
+                                                           linfct = c("neocortex: 50- vs. HC" = "neocortex.log~response50.w850m",
+                                                                      "hippocampus: 50- vs. HC" = "hippocampus.log~response50.w850m",
+                                                                      "neostriatum: 50- vs. HC" = "neostriatum.log~response50.w850m")),
+                                   "50=+ vs HC" =  effects2(lvmfitW8.longi50C,
+                                                            linfct = c("neocortex: 50+ vs. HC" = "neocortex.log~response50.w850pe",
+                                                                       "hippocampus: 50+ vs. HC" = "hippocampus.log~response50.w850pe",
+                                                                       "neostriatum: 50+ vs. HC" = "neostriatum.log~response50.w850pe")),
+                                   "50=+ vs 50-" =  effects2(lvmfitW8.longi50C,
+                                                             linfct = c("neocortex: 50+ vs. 50-" = "neocortex.log~response50.w850pe-neocortex.log~response50.w850m",
+                                                                        "hippocampus: 50+ vs. 50-" = "hippocampus.log~response50.w850pe-hippocampus.log~response50.w850m",
+                                                                        "neostriatum: 50+ vs. 50-" = "neostriatum.log~response50.w850pe-neostriatum.log~response50.w850m"
+                                                                        )))
 lvmW8.regionEffect.longi50 <- lapply(lvmW8.regionEffect.longi50, summary,
                                      test = adjusted("single-step"),
                                      transform = function(x){100*(exp(x)-1)},
@@ -1335,10 +1314,10 @@ logLik(lvmfitW8IPCW.longi)
 ## colSums(sCorrect(lvmfitW8IPCW.longi, ssc = NA, df = NA)$sCorrect$score)-score(lvmfitW8IPCW.longi)
 
 ## ** inference
-lvmfitW8IPCW.longi <- sCorrect(lvmfitW8IPCW.longi, ssc = NA, df = NA)
+lvmfitW8IPCW.longiC <- estimate2(lvmfitW8IPCW.longi, ssc = NA, df = NA)
 
 ## global effect: HC vs NR or RE
-lvmfitW8IPCW.etaEffect.longi <- glht2(lvmfitW8IPCW.longi, linfct = c("RE vs. HC" = "eta~group4RE=0",
+lvmfitW8IPCW.etaEffect.longi <- glht2(lvmfitW8IPCW.longiC, linfct = c("RE vs. HC" = "eta~group4RE=0",
                                                                      "NR vs. HC" = "eta~group4NR=0",
                                                                      "RE vs. NR" = "eta~group4RE-eta~group4NR=0"))
 lvmfitW8IPCW.etaEffect.longi <- summary(lvmfitW8IPCW.etaEffect.longi, test = adjusted("none"))
@@ -1358,16 +1337,16 @@ lvmfitW8IPCW.etaEffect.longi
 ## (Adjusted p values reported -- none method) 
 
 ## region specific effect: HC vs NR or RE
-lvmW8IPCW.regionEffect.longi <- list("RE vs. HC" = effects2(lvmfitW8IPCW.longi,
-                                                            link = c("neocortex: RE vs. HC" = "neocortex.log~group4RE",
-                                                                     "hippocampus: RE vs. HC" = "hippocampus.log~group4RE",
-                                                                     "neostriatum: RE vs. HC" = "neostriatum.log~group4RE")),
-                                     "NR vs HC" =  effects2(lvmfitW8IPCW.longi,
-                                                            link = c("neocortex: NR vs. HC" = "neocortex.log~group4NR",
+lvmW8IPCW.regionEffect.longi <- list("RE vs. HC" = effects2(lvmfitW8IPCW.longiC,
+                                                            linfct = c("neocortex: RE vs. HC" = "neocortex.log~group4RE",
+                                                                       "hippocampus: RE vs. HC" = "hippocampus.log~group4RE",
+                                                                       "neostriatum: RE vs. HC" = "neostriatum.log~group4RE")),
+                                     "NR vs HC" =  effects2(lvmfitW8IPCW.longiC,
+                                                            linfct = c("neocortex: NR vs. HC" = "neocortex.log~group4NR",
                                                                      "hippocampus: NR vs. HC" = "hippocampus.log~group4NR",
                                                                      "neostriatum: NR vs. HC" = "neostriatum.log~group4NR")),
-                                     "RE vs NR" =  effects2(lvmfitW8IPCW.longi,
-                                                            link = c("neocortex: RE vs. NR" = "neocortex.log~group4RE-neocortex.log~group4NR",
+                                     "RE vs NR" =  effects2(lvmfitW8IPCW.longiC,
+                                                            linfct = c("neocortex: RE vs. NR" = "neocortex.log~group4RE-neocortex.log~group4NR",
                                                                      "hippocampus: RE vs. NR" = "hippocampus.log~group4RE-hippocampus.log~group4NR",
                                                                      "neostriatum: RE vs. NR" = "neostriatum.log~group4RE-neostriatum.log~group4NR"
                                                                      )))

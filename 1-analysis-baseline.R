@@ -12,11 +12,11 @@ library(nlme)
 if(Sys.info()["login"] == "hpl802"){
     path <- "c:/Users/hpl802/Documents/Consult/Consult-NRU/C45-WP1-Kristin/"
 }else if(Sys.info()["login"] == "bozenne"){
-    path <- "~/Dropbox/C45-WP1-Kristin/"    
+    path <- "~/Documents/GitHub/article-petNP1/"    
 }else{
     path <- "C:/Users/localadmin/Dropbox/C45 - WP1 - Kristin"
 }
-path.code <- file.path(path,"code")
+path.code <- file.path(path,"")
 path.data <- file.path(path,"source")
 
 
