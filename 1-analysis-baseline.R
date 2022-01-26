@@ -1,8 +1,8 @@
 ## * Packages
-library(lava)
 library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "9e7fa13ed7522b45871f5bfdea02ffeddaee1b90")
-library(butils) ## installation: devtools::install_github("bozenne/butils")
-library(LMMstar)  ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "19bf4587e55a4821d369d937e8480b82b26cdc60")
+library(LMMstar)  ## installation: devtools::install_github("bozenne/LMMstar", ref = "19bf4587e55a4821d369d937e8480b82b26cdc60")
+## LMMstar version 0.4.4
+## lavaSearch2 version 2.0.0
 
 library(multcomp)
 library(qqtest)
@@ -10,7 +10,7 @@ library(nlme)
 
 ## * Set working directory and path to dataset
 if(Sys.info()["login"] == "hpl802"){
-    path <- "c:/Users/hpl802/Documents/Consult/Consult-NRU/C45-WP1-Kristin/"
+    path <- "~/GitHub/article-petNP1/"
 }else if(Sys.info()["login"] == "bozenne"){
     path <- "~/Documents/GitHub/article-petNP1/"    
 }else{

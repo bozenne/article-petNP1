@@ -1,8 +1,9 @@
 ## * Packages
 library(lava)
-library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "58bf35a9112795b930a8e3a294116e7d6f1d10ee")
+library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "9e7fa13ed7522b45871f5bfdea02ffeddaee1b90") 
 library(LMMstar) ## installation: devtools::install_github("bozenne/LMMstar", ref = "19bf4587e55a4821d369d937e8480b82b26cdc60")
-library(butils) ## installation: devtools::install_github("bozenne/butils")
+## LMMstar version 0.4.4
+## lavaSearch2 version 2.0.0
 
 library(multcomp)
 library(qqtest)
@@ -10,7 +11,7 @@ library(nlme)
 
 ## * Set working directory and path to dataset
 if(Sys.info()["login"] == "hpl802"){
-    path <- "c:/Users/hpl802/Documents/Consult/Consult-NRU/C45-WP1-Kristin/"
+    path <- "~/GitHub/article-petNP1/"    
 }else if(Sys.info()["login"] == "bozenne"){
     path <- "~/Documents/GitHub/article-petNP1/"    
 }else{
@@ -22,6 +23,7 @@ path.data <- file.path(path,"source")
 
 ## * Load data
 source(file.path(path.code,"data-management-longitudinal-prediction.R"))
+source(file.path(path.code,"FUN_partialCorrelation.R"))
 
 ## * Check data
 ## keep.var <- c("group","age","sex","bmi","mr","sb.per.kg","neocortex.log","hippocampus.log","neostriatum.log")
@@ -990,11 +992,10 @@ gg.resQQ <- gg.resQQ + facet_grid(time~region, scale = "free")
 ## lava::partialcor(~ age + sex + sert + sb.per.kg,
 ##                  data = df.longiCase[1:30, c("neocortex.log", "change.hamd6.w2", "age", "sex", "sert", "sb.per.kg")])
 
-lmCor.partial.longi <- list("W2" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w2"), fisher.transform = TRUE, cluster = "id"),
-                            "W4" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w4"), fisher.transform = TRUE, cluster = "id"),
-                            "W8" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w8"), fisher.transform = TRUE, cluster = "id"),
-                            "W12" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w12"), fisher.transform = TRUE, cluster = "id"))
-
+lmCor.partial.longi <- list("W2" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w2"), cluster = "id"),
+                            "W4" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w4"), cluster = "id"),
+                            "W8" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w8"), cluster = "id"),
+                            "W12" = partialCorrelation(lmCor.longi, var = c("change.hamd6.w12"), cluster = "id"))
 lapply(lmCor.partial.longi, summary)
 ## $W2
 

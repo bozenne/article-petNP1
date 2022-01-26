@@ -1,5 +1,4 @@
 ## * package
-library(butils) ## installation: devtools::install_github("bozenne/butils")
 library(data.table)
 
 ## * set working directory and path to dataset

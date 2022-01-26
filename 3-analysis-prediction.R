@@ -3,7 +3,8 @@
 ## * Packages
 library(Publish)
 library(xtable)
-library(BuyseTest)
+library(BuyseTest) ## install.packages("BuyseTest")
+## version 2.3.10
 library(data.table)
 library(pROC)
 library(cvAUC)

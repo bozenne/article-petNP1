@@ -1,7 +1,7 @@
 ## * Load packages
 library(lava)
-library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "development")
-library(butils) ## installation: devtools::install_github("bozenne/butils")
+library(lavaSearch2) ## installation: devtools::install_github("bozenne/lavaSearch2", ref = "9e7fa13ed7522b45871f5bfdea02ffeddaee1b90")
+## lavaSearch2 version 2.0.0
 
 library(multcomp)
 library(qqtest)
